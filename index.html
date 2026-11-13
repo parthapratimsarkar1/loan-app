@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Loan &amp; EMI Manager</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mu:#6b7488;--bd:#e3e7f0;--pr:#2f5bea;--ok:#12805c;--bad:#c62f3e;--warn:#b86e00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141f;--card:#192032;--tx:#e8ecf6;--mu:#98a2b8;--bd:#2a3350;--pr:#6c8cff;--ok:#3dd29d;--bad:#ff7080;--warn:#f0b24d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141f;--card:#192032;--tx:#e8ecf6;--mu:#98a2b8;--bd:#2a3350;--pr:#6c8cff;--ok:#3dd29d;--bad:#ff7080;--warn:#f0b24d;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--bd);padding:14px 18px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+h1{font-size:19px;margin:0 0 10px}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{border:1px solid var(--bd);background:transparent;color:var(--tx);padding:7px 14px;border-radius:20px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--pr);border-color:var(--pr);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px}
+.stat .l{color:var(--mu);font-size:13px}.stat .v{font-size:22px;font-weight:700;margin-top:2px}
+h2{font-size:16px;margin:0 0 10px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-weight:600;font-size:12px;text-transform:uppercase}
+.badge{padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid currentColor}
+.paid{color:var(--ok)}.unpaid{color:var(--warn)}.over{color:var(--bad)}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+label{font-size:12px;color:var(--mu);display:flex;flex-direction:column;gap:4px}
+input,select{padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:14px;width:100%}
+.btn{background:var(--pr);color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font-size:14px}
+.btn.s{padding:5px 10px;font-size:12px}.btn.g{background:transparent;color:var(--bad);border:1px solid var(--bd)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.row input,.row select{width:auto;min-width:160px}
+.muted{color:var(--mu)}.hide{display:none}
+.sub{display:block;font-size:12px;font-weight:400;color:var(--mu);margin-top:2px}
+header{box-shadow:0 1px 8px rgba(20,30,60,.06)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:16px}
+.kpi{display:flex;gap:12px;align-items:center;padding:16px;border-radius:14px;box-shadow:0 2px 10px rgba(20,30,60,.05)}
+.ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none}
+.kpi .l{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.kpi .v{font-size:22px;font-weight:700;line-height:1.2}
+.kpi .n{font-size:12px;color:var(--mu)}
+.two{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+.bar{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--pr),var(--ok))}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mu);margin-top:8px}
+.lg b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.chart{width:100%;height:auto}.chart text{fill:var(--mu);font-size:11px}
+.sec{margin-bottom:16px}.alert{border-left:4px solid var(--bad)}
+.pct{font-size:26px;font-weight:700}
+
+/* ---------- Login page ---------- */
+.auth{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr}
+.brand{position:relative;overflow:hidden;color:#fff;padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(150deg,#16308f 0%,#2f5bea 55%,#6a4fe0 100%)}
+.brand::before,.brand::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.08)}
+.brand::before{width:420px;height:420px;right:-140px;top:-120px}
+.brand::after{width:300px;height:300px;left:-100px;bottom:-110px}
+.brand>*{position:relative;z-index:1}
+.logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:18px;letter-spacing:.01em}
+.logo i{font-style:normal;width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:21px;border:1px solid rgba(255,255,255,.25)}
+.hero h2{font-size:34px;line-height:1.2;margin:0 0 14px;font-weight:750;letter-spacing:-.01em}
+.hero p{margin:0 0 28px;color:rgba(255,255,255,.82);font-size:16px;max-width:420px}
+.feat{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.feat li{display:flex;gap:12px;align-items:center;font-size:14.5px;color:rgba(255,255,255,.92)}
+.feat span{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.15);display:grid;place-items:center;flex:none;font-size:16px}
+.foot{font-size:12.5px;color:rgba(255,255,255,.65)}
+.panel{display:flex;align-items:center;justify-content:center;padding:32px 24px;background:var(--bg)}
+.box{width:100%;max-width:410px}
+.mlogo{display:none;align-items:center;gap:10px;font-weight:700;font-size:17px;margin-bottom:26px}
+.mlogo i{font-style:normal;width:38px;height:38px;border-radius:11px;background:var(--pr);color:#fff;display:grid;place-items:center}
+.box h3{font-size:27px;margin:0 0 6px;letter-spacing:-.01em}
+.box .lead{color:var(--mu);margin:0 0 26px}
+.lform{display:flex;flex-direction:column;gap:18px;grid-template-columns:none}
+.fl{font-size:13px;font-weight:600;color:var(--tx);gap:7px}
+.fld{position:relative;display:block}
+.fld .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.55;pointer-events:none}
+.fld input{height:48px;padding:0 44px 0 42px;font-size:15px;border-radius:10px;background:var(--card);transition:border-color .15s,box-shadow .15s}
+.fld input:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 4px color-mix(in srgb,var(--pr) 18%,transparent)}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;color:var(--mu);cursor:pointer;border-radius:8px;font-size:16px}
+.eye:hover{background:var(--bd)}
+.signin{height:50px;border-radius:10px;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 16px color-mix(in srgb,var(--pr) 35%,transparent);transition:transform .1s,opacity .15s}
+.signin:hover{opacity:.93}.signin:active{transform:scale(.99)}.signin:disabled{opacity:.7;cursor:progress}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err{display:none;gap:8px;align-items:flex-start;padding:11px 13px;border-radius:10px;font-size:13.5px;color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent);border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)}
+.err.on{display:flex}
+.secure{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--mu);font-size:12.5px;margin-top:22px}
+@media(max-width:860px){
+  .auth{grid-template-columns:1fr}
+  .brand{display:none}
+  .mlogo{display:flex}
+  .panel{align-items:flex-start;padding-top:56px}
+}
+</style>
+</head>
+<body>
+<div id="auth" class="hide">
+ <div class="auth">
+  <aside class="brand">
+   <div class="logo"><i>💼</i>Loan &amp; EMI Manager</div>
+   <div class="hero">
+    <h2>Manage every loan,<br>collect every EMI.</h2>
+    <p>One secure place to track customers, installments, penalties and collections.</p>
+    <ul class="feat">
+     <li><span>📅</span>Automatic EMI schedules for every loan</li>
+     <li><span>⚠️</span>Instant overdue and penalty tracking</li>
+     <li><span>📈</span>Live dashboard of collections and profit</li>
+    </ul>
+   </div>
+   <div class="foot">© <span id="yr"></span> Loan &amp; EMI Manager · Authorized access only</div>
+  </aside>
+  <section class="panel">
+   <div class="box">
+    <div class="mlogo"><i>💼</i>Loan &amp; EMI Manager</div>
+    <h3>Welcome back</h3>
+    <p class="lead">Sign in to your account to continue.</p>
+    <form id="lf" class="lform" novalidate>
+     <label class="fl">Email address
+      <span class="fld"><span class="ico">✉️</span><input name="e" type="email" required autocomplete="username" placeholder="you@example.com"></span>
+     </label>
+     <label class="fl">Password
+      <span class="fld"><span class="ico">🔒</span><input id="pw" name="p" type="password" required autocomplete="current-password" placeholder="Enter your password"><button class="eye" id="eye" type="button" aria-label="Show password">👁️</button></span>
+     </label>
+     <div id="le" class="err" role="alert" aria-live="polite"></div>
+     <button class="btn signin" id="sb" type="submit">Sign in</button>
+    </form>
+    <div class="secure">🔐 Encrypted, private and secure</div>
+   </div>
+  </section>
+ </div>
+</div>
+<div id="app" class="hide">
+<header>
+  <h1>💼 Loan &amp; EMI Manager<span class="sub" id="dt"></span></h1>
+  <nav id="nav">
+    <button data-t="dash" class="on">Dashboard</button>
+    <button data-t="loans">Loans</button>
+    <button data-t="inst">Installments</button>
+    <button id="lo" style="margin-left:auto">Sign out</button>
+  </nav>
+</header>
+<main>
+  <section id="dash"></section>
+  <section id="loans" class="hide"></section>
+  <section id="inst" class="hide"></section>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.url,CFG.key);
+let loans=[];
+const save=async l=>{const {error}=await sb.from("loans").upsert({id:l.id,data:l});if(error)alert("Save failed: "+error.message)};
+const $=s=>document.querySelector(s);
+const inr=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const today=()=>iso(new Date());
+const fmt=s=>new Date(s+"T00:00:00").toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+const daysLate=due=>Math.max(0,Math.round((new Date(today()+"T00:00:00")-new Date(due+"T00:00:00"))/864e5));
+function addMonths(s,m){const d=new Date(s+"T00:00:00"),day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+m);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return iso(d)}
+function calcEmi(p,rate,n){const r=rate/1200;return r===0?p/n:p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)}
+const pen=(l,i)=>i.paidOn?(i.penalty||0):daysLate(i.due)*l.penaltyPerDay;
+const status=i=>i.paidOn?"paid":(daysLate(i.due)>0?"over":"unpaid");
+const badge=(s)=>`<span class="badge ${s}">${{paid:"Paid",over:"Overdue",unpaid:"Unpaid"}[s]}</span>`;
+
+function addLoan(e){
+  e.preventDefault();
+  const f=new FormData(e.target),p=+f.get("p"),rate=+f.get("rate"),n=+f.get("n"),start=f.get("start");
+  const emi=calcEmi(p,rate,n),inst=[];
+  for(let k=1;k<=n;k++)inst.push({n:k,due:addMonths(start,k),paidOn:null,penalty:0});
+  const L={id:Date.now(),name:f.get("name"),phone:f.get("phone"),principal:p,rate,months:n,start,emi,penaltyPerDay:+f.get("pen"),inst};loans.push(L);save(L);render();show("loans");
+}
+function markPaid(id,n){
+  const l=loans.find(x=>x.id==id),i=l.inst.find(x=>x.n==n);
+  i.penalty=pen(l,i);i.paidOn=today();save(l);render();
+}
+function undo(id,n){const l=loans.find(x=>x.id==id),i=l.inst.find(x=>x.n==n);i.paidOn=null;i.penalty=0;save(l);render()}
+function delLoan(id){if(confirm("Delete this loan and all its installments?")){loans=loans.filter(x=>x.id!=id);sb.from("loans").delete().eq("id",id).then(({error})=>{if(error)alert(error.message)});render()}}
+
+function all(){return loans.flatMap(l=>l.inst.map(i=>({l,i})))}
+function dash(){
+  const A=all(),invested=loans.reduce((s,l)=>s+l.principal,0),expected=A.reduce((s,x)=>s+x.l.emi,0);
+  const collected=A.filter(x=>x.i.paidOn).reduce((s,x)=>s+x.l.emi,0),pending=expected-collected;
+  const over=A.filter(x=>status(x.i)==='over'),overAmt=over.reduce((s,x)=>s+x.l.emi,0);
+  const penDue=over.reduce((s,x)=>s+pen(x.l,x.i),0),penCol=A.filter(x=>x.i.paidOn).reduce((s,x)=>s+x.i.penalty,0);
+  const pct=expected?collected/expected*100:0;
+  const k=[['💰','Total invested',inr(invested),loans.length+' active loans','#2f5bea'],['✅','Collected',inr(collected),A.filter(x=>x.i.paidOn).length+' EMIs received','#12a06f'],['⏳','Pending',inr(pending),A.filter(x=>!x.i.paidOn).length+' EMIs remaining','#e09a1a'],['📈','Expected profit',inr(expected-invested),'Interest over full tenure','#8a4fe0'],['⚠️','Overdue',inr(overAmt),over.length+' EMIs late','#d63a4a'],['🧾','Penalty',inr(penDue),inr(penCol)+' already collected','#d6693a']];
+  const now=new Date(),ms=[];
+  for(let j=-3;j<=4;j++){const d=new Date(now.getFullYear(),now.getMonth()+j,1);ms.push({key:iso(d).slice(0,7),lb:d.toLocaleDateString('en-IN',{month:'short'}),e:0,c:0})}
+  A.forEach(x=>{const m=ms.find(m=>m.key===x.i.due.slice(0,7));if(m){m.e+=x.l.emi;if(x.i.paidOn)m.c+=x.l.emi}});
+  const mx=Math.max(1,...ms.map(m=>m.e)),Y=v=>190-v/mx*165;
+  const bars=ms.map((m,j)=>{const x=20+j*62;return `<rect x="${x}" y="${Y(m.e)}" width="20" height="${190-Y(m.e)}" rx="3" style="fill:var(--pr);opacity:.25"/><rect x="${x+22}" y="${Y(m.c)}" width="20" height="${190-Y(m.c)}" rx="3" style="fill:var(--ok)"/><text x="${x+21}" y="208" text-anchor="middle">${m.lb}</text>`}).join('');
+  const paidN=A.filter(x=>x.i.paidOn).length,overN=over.length,unN=A.length-paidN-overN,circ=2*Math.PI*40;
+  let off=0;
+  const segs=A.length?[[paidN,'--ok'],[unN,'--warn'],[overN,'--bad']].map(([n,c])=>{const len=n/A.length*circ,s=`<circle cx="60" cy="60" r="40" fill="none" stroke-width="16" style="stroke:var(${c})" stroke-dasharray="${len} ${circ-len}" stroke-dashoffset="${-off}" transform="rotate(-90 60 60)"/>`;off+=len;return s}).join(''):'<circle cx="60" cy="60" r="40" fill="none" stroke-width="16" style="stroke:var(--bd)"/>';
+  const upcoming=A.filter(x=>!x.i.paidOn&&daysLate(x.i.due)===0).sort((a,b)=>a.i.due.localeCompare(b.i.due)).slice(0,6);
+  const late=over.sort((a,b)=>a.i.due.localeCompare(b.i.due)).slice(0,6);
+  $('#dash').innerHTML=`<div class="kpis">${k.map(c=>`<div class="card kpi"><div class="ic" style="background:${c[4]}22">${c[0]}</div><div><div class="l">${c[1]}</div><div class="v">${c[2]}</div><div class="n">${c[3]}</div></div></div>`).join('')}</div>
+  <div class="card sec"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Collection progress</h2><span class="pct">${pct.toFixed(1)}%</span></div><div class="bar"><i style="width:${pct}%"></i></div><div class="lg"><span>${inr(collected)} collected of ${inr(expected)} expected</span></div></div>
+  <div class="two"><div class="card"><h2>Monthly collection</h2><svg class="chart" viewBox="0 0 520 215">${bars}</svg><div class="lg"><span><b style="background:var(--pr);opacity:.35"></b>Expected</span><span><b style="background:var(--ok)"></b>Collected</span></div></div>
+  <div class="card"><h2>EMI status</h2><svg viewBox="0 0 120 120" style="width:100%;max-width:170px;display:block;margin:0 auto">${segs}<text x="60" y="58" text-anchor="middle" style="fill:var(--tx);font-size:18px;font-weight:700">${A.length}</text><text x="60" y="72" text-anchor="middle" style="fill:var(--mu);font-size:8px">installments</text></svg><div class="lg" style="justify-content:center"><span><b style="background:var(--ok)"></b>Paid ${paidN}</span><span><b style="background:var(--warn)"></b>Upcoming ${unN}</span><span><b style="background:var(--bad)"></b>Overdue ${overN}</span></div></div></div>
+  ${late.length?`<div class="card alert sec"><h2>Needs attention: overdue EMIs</h2>${table(late)}</div>`:''}
+  <div class="card sec"><h2>Upcoming installments</h2>${upcoming.length?table(upcoming):'<p class="muted">No upcoming installments. Add a loan to get started.</p>'}</div>`;
+}
+function table(rows){
+  return `<div class="scroll"><table><tr><th>Customer</th><th>#</th><th>Due date</th><th>EMI</th><th>Status</th><th>Penalty</th><th>Total</th><th></th></tr>${rows.map(({l,i})=>{
+    const s=status(i),p=pen(l,i);
+    return `<tr><td>${esc(l.name)}</td><td>${i.n}/${l.months}</td><td>${fmt(i.due)}${s==="over"?` <span class="over">(${daysLate(i.due)}d late)</span>`:""}${i.paidOn?` <span class="muted">paid ${fmt(i.paidOn)}</span>`:""}</td><td>${inr(l.emi)}</td><td>${badge(s)}</td><td class="${p?"over":""}">${inr(p)}</td><td><b>${inr(l.emi+p)}</b></td><td>${i.paidOn?`<button class="btn s g" onclick="undo(${l.id},${i.n})">Undo</button>`:`<button class="btn s" onclick="markPaid(${l.id},${i.n})">Mark paid</button>`}</td></tr>`}).join("")}</table></div>`;
+}
+function loansView(){
+  $("#loans").innerHTML=`<div class="card" style="margin-bottom:18px"><h2>Add new loan</h2>
+  <form id="f">
+    <label>Customer name<input name="name" required></label>
+    <label>Phone<input name="phone"></label>
+    <label>Loan amount (₹)<input name="p" type="number" min="1" required></label>
+    <label>Interest rate (% per year)<input name="rate" type="number" step="0.01" min="0" value="12" required></label>
+    <label>Tenure (months)<input name="n" type="number" min="1" max="360" required></label>
+    <label>Loan start date<input name="start" type="date" value="${today()}" required></label>
+    <label>Penalty per day late (₹)<input name="pen" type="number" min="0" value="50" required></label>
+    <label>&nbsp;<button class="btn" type="submit">Create loan &amp; EMI schedule</button></label>
+  </form></div>
+  <div class="card"><h2>All loans</h2>${loans.length?`<div class="scroll"><table><tr><th>Customer</th><th>Phone</th><th>Amount</th><th>Rate</th><th>Months</th><th>EMI</th><th>Paid</th><th>Penalty/day</th><th></th></tr>${loans.map(l=>`<tr><td>${esc(l.name)}</td><td>${esc(l.phone||"-")}</td><td>${inr(l.principal)}</td><td>${l.rate}%</td><td>${l.months}</td><td>${inr(l.emi)}</td><td>${l.inst.filter(i=>i.paidOn).length}/${l.months}</td><td>${inr(l.penaltyPerDay)}</td><td><button class="btn s g" onclick="delLoan(${l.id})">Delete</button></td></tr>`).join("")}</table></div>`:'<p class="muted">No loans yet.</p>'}</div>`;
+  $("#f").onsubmit=addLoan;
+}
+let fS="all",fC="";
+function instView(){
+  const opts=loans.map(l=>`<option value="${l.id}" ${fC==l.id?"selected":""}>${esc(l.name)}</option>`).join("");
+  let rows=all().filter(x=>(fS==="all"||status(x.i)===fS)&&(!fC||x.l.id==fC)).sort((a,b)=>a.i.due.localeCompare(b.i.due));
+  $("#inst").innerHTML=`<div class="card"><div class="row">
+  <select id="fs">${[["all","All"],["unpaid","Unpaid"],["over","Overdue"],["paid","Paid"]].map(o=>`<option value="${o[0]}" ${fS===o[0]?"selected":""}>${o[1]}</option>`).join("")}</select>
+  <select id="fc"><option value="">All customers</option>${opts}</select></div>
+  ${rows.length?table(rows):'<p class="muted">Nothing to show.</p>'}
+  <p class="muted" style="margin:12px 0 0">Penalty = days late × the loan’s per-day penalty. It stops growing once you mark the EMI as paid.</p></div>`;
+  $("#fs").onchange=e=>{fS=e.target.value;instView()};
+  $("#fc").onchange=e=>{fC=e.target.value;instView()};
+}
+function render(){$('#dt').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});dash();loansView();instView()}
+function show(t){
+  document.querySelectorAll("main section").forEach(s=>s.classList.toggle("hide",s.id!==t));
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>show(b.dataset.t));
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  $("#auth").classList.toggle("hide",!!session);$("#app").classList.toggle("hide",!session);
+  if(!session)return;
+  const {data,error}=await sb.from("loans").select("data").order("created_at");
+  if(error){alert(error.message);return}
+  loans=data.map(r=>r.data);render();
+}
+$("#yr").textContent=new Date().getFullYear();
+$("#eye").onclick=()=>{const p=$("#pw"),h=p.type==="password";p.type=h?"text":"password";$("#eye").textContent=h?"🙈":"👁️";$("#eye").setAttribute("aria-label",h?"Hide password":"Show password")};
+$("#lf").onsubmit=async e=>{
+  e.preventDefault();
+  const f=new FormData(e.target),err=$("#le"),btn=$("#sb"),em=(f.get("e")||"").trim(),pw=f.get("p")||"";
+  err.classList.remove("on");
+  if(!em||!pw){err.textContent="Please enter your email and password.";err.classList.add("on");return}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Signing in…';
+  const {error}=await sb.auth.signInWithPassword({email:em,password:pw});
+  btn.disabled=false;btn.textContent="Sign in";
+  if(error){err.textContent=/invalid/i.test(error.message)?"Incorrect email or password. Please try again.":error.message;err.classList.add("on")}
+  else{e.target.reset();boot()}
+};
+$("#lo").onclick=async()=>{await sb.auth.signOut();loans=[];boot()};
+boot();
+</script>
+</body>
+</html>
